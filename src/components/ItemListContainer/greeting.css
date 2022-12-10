@@ -1,7 +1,8 @@
-.greeting {
+.container-cards {
+    width: 100%;
     display: flex;
-    justify-content: center;
-    margin-top: 30px;
-    border-radius: 50px;
-    background-color: rgb(157, 157, 233);
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 50px;
 }
