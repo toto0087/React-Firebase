@@ -1,9 +1,11 @@
 import "./greeting.css"
-import { products } from "../productosMock"
 import { useEffect, useState } from 'react'
 import ItemList from "../items/ItemList"
-import Counter from "../counter/Counter"
 import { useParams } from "react-router-dom"
+import CircleLoader from "react-spinners/CircleLoader";
+
+import {getDocs,collection} from "firebase/firestore"
+import {db} from "../../firebaseConfig"
 
 const ItemListContainer = () => {
 
@@ -11,31 +13,37 @@ const ItemListContainer = () => {
 
   const [items,setItems] = useState([])
 
-  const agregarCarr = () => {
-    console.log("agregado a carrito")
-  }
+  // const [isLoading,setIsLoading] = useState(false)
 
   useEffect( ()=> {  
 
-    const prodsFiltrados = products.filter(productos=>productos.category===categoryName)
-    
+  
+    const itemCollection = collection( db, "products" )
 
-    const prodConsum = new Promise((resolve,reject) => {
-    resolve(categoryName ? prodsFiltrados : products)
-  })
+    getDocs(itemCollection)
+    .then( (res) => {
+      const products = res.docs.map( product => {
+        return {
+          id: product.id,
+          ...product.data()
+        }
+      })
+      setItems(products)
+    })
+    .catch( (err) => console.log(err) )
 
-  prodConsum
-    .then((res)=>{setItems(res)})
-    .catch((err)=>{console.log(err)})
-  }, [categoryName])
+}, [categoryName])
 
 
   return ( 
     <>
-      <Counter stock={10} initial={1} onAdd={agregarCarr}/> 
-      <div className="container-cards">
-        <ItemList items={items}/>
-      </div>
+      {
+     
+        <div className="container-cards">
+          <ItemList items={items}/>
+        </div>
+      }
+
     </>
   )
 }

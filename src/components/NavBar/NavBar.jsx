@@ -13,6 +13,7 @@ const NavBar = () => {
                     <Link to="/category/PCs Armadas" className="navbar-item">PCs Armadas</Link>
                     <Link to="/category/Laptop" className="navbar-item">Laptops</Link>
                     <Link to="/category/Tablets" className="navbar-item">Tablets</Link>
+                    <Link className="navbar-item" to="/">Todas</Link>
                 </ul>
             <CartWidget />
         </div>
