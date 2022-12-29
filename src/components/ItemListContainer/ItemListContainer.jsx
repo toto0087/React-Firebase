@@ -2,9 +2,9 @@ import "./greeting.css"
 import { useEffect, useState } from 'react'
 import ItemList from "../items/ItemList"
 import { useParams } from "react-router-dom"
-import CircleLoader from "react-spinners/CircleLoader";
+// import CircleLoader from "react-spinners/CircleLoader";
 
-import {getDocs,collection} from "firebase/firestore"
+import {getDocs,collection,query,where} from "firebase/firestore"
 import {db} from "../../firebaseConfig"
 
 const ItemListContainer = () => {
@@ -17,8 +17,25 @@ const ItemListContainer = () => {
 
   useEffect( ()=> {  
 
-  
     const itemCollection = collection( db, "products" )
+
+  if(categoryName) {
+
+    const q = query(itemCollection, where("category","==",categoryName))
+
+    getDocs(q)
+    .then( (res) => {
+      const products = res.docs.map( product => {
+        return {
+          id: product.id,
+          ...product.data()
+        }
+      })
+      setItems(products)
+    })
+    .catch( (err) => console.log(err) )
+
+  } else {
 
     getDocs(itemCollection)
     .then( (res) => {
@@ -31,6 +48,7 @@ const ItemListContainer = () => {
       setItems(products)
     })
     .catch( (err) => console.log(err) )
+  }
 
 }, [categoryName])
 
