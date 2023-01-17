@@ -1,16 +1,46 @@
 import React from 'react'
 import { useState } from 'react'
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  doc,
+  updateDoc,
+} from "firebase/firestore"
+import { db } from "../../firebaseConfig"
 
-const Form = () => {
+const Form = ({cart,totalPrice,setCartId,clearCart,}) => {
 
+    const total = totalPrice()
 
-    const [userData,setUserData] = useState({name: "", lastName: ""})
+    const [userData,setUserData] = useState({name: "", email: "",phone: ""})
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        console.log(userData)
+        const order = {
+          buyer: userData,
+          items: cart,
+          total: total,
+          date: serverTimestamp(),
+        }
+
+        const orderCollection = collection(db,"orders")
+
+        addDoc(orderCollection,order)
+        .then(res=>setCartId(res.id))
+
+        
+        
+
+        cart.map(element => {
+          updateDoc(doc(db,"products",element.id),{stock:element.stock-element.quantity})
+        })
+
+        clearCart()
     }
+
+
 
 
   return (
@@ -25,10 +55,16 @@ const Form = () => {
             value={userData.name}/>
 
             <input type="text" 
-            placeholder='Ingrese su apellido' 
+            placeholder='Ingrese su telefono' 
             name='lastname'
-            onChange={(e)=>{setUserData({...userData, lastName:e.target.value})}}
-            value={userData.lastName}/>
+            onChange={(e)=>{setUserData({...userData, phone:e.target.value})}}
+            value={userData.phone}/>
+
+            <input type="text" 
+            placeholder='Ingrese su email' 
+            name='lastname'
+            onChange={(e)=>{setUserData({...userData, email:e.target.value})}}
+            value={userData.email}/>
 
             <button type="submit">Enviar</button> 
         </form>
